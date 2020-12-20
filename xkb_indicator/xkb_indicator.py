@@ -34,21 +34,33 @@ import pycook.insta as st
 from ctypes import cdll, c_uint
 X11 = cdll.LoadLibrary("libX11.so.6")
 
+#* Constants
+class Layout:
+    def __init__(self, layout, caption):
+        self.layout = layout
+        self.caption = caption
+    def __repr__(self):
+        return self.layout
+
+DEF_LAYOUT = Layout("xx", "en")
+ALT_LAYOUT = Layout("ua", "ua")
+LAYOUTS = {"xx": DEF_LAYOUT, "ua": ALT_LAYOUT}
+
 #* Functions
 def current_layout():
     r = st.scb("setxkbmap -query")
-    return re.search("layout: *(.*)", r).group(1)
+    m = re.search("layout: *(.*)", r).group(1)
+    return LAYOUTS[m]
 
-def next_layout(layout):
-    return "ua" if layout == "xx" else "xx"
+def next_layout():
+    layout = current_layout()
+    return ALT_LAYOUT if layout == DEF_LAYOUT else DEF_LAYOUT
 
 def label(toggle=False):
-    captions = {"xx": "en", "ua": "ua"}
-    cur_layout = current_layout()
     if toggle:
-        return captions[next_layout(cur_layout)]
+        return next_layout().caption
     else:
-        return captions[cur_layout] + " ⏷"
+        return current_layout().caption + " ⏷"
 
 def unset_caps_lock():
     display = X11.XOpenDisplay(None)
@@ -56,9 +68,9 @@ def unset_caps_lock():
     X11.XCloseDisplay(display)
 
 def set_layout(layout):
-    if layout == "xx":
+    if layout == DEF_LAYOUT:
         unset_caps_lock()
-    st.scb(f"setxkbmap {layout}")
+    st.scb(f"setxkbmap {layout.layout}")
 
 #* Class
 class XkbIndicator:
@@ -89,7 +101,7 @@ class XkbIndicator:
         return menu
 
     def toggle(self, source):
-        set_layout(next_layout(current_layout()))
+        set_layout(next_layout())
         self.item_toggle.set_label(label(True))
         GObject.idle_add(
             self.indicator.set_label,
@@ -98,7 +110,7 @@ class XkbIndicator:
             priority=GObject.PRIORITY_DEFAULT)
 
     def stop(self, source):
-        set_layout("xx")
+        set_layout(DEF_LAYOUT)
         gtk.main_quit()
 
 def main(argv=None):
