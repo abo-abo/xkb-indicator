@@ -1,0 +1,12 @@
+* What's This?
+This is a xkb layout indicator for your GTK panel.
+
+* Requirements
+#+begin_src sh
+sudo apt-get install python-gi
+#+end_src
+
+* Install
+#+begin_src sh
+sudo -H pip3 install xkb-indicator
+#+end_src

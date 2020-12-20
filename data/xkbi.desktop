@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=xkbi
+Exec=xkbi
+Type=Application
+Terminal=false
+Categories=System
+Icon=input-keyboard
