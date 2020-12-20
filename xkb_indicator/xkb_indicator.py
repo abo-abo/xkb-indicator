@@ -23,11 +23,13 @@ import sys
 import re
 import signal
 import gi
-gi.require_version ("Gtk", "3.0")
-gi.require_version ("AppIndicator3", "0.1")
+gi.require_version("Gtk", "3.0")
+gi.require_version("AppIndicator3", "0.1")
+gi.require_version("Keybinder", "3.0")
 from gi.repository import Gtk as gtk
 from gi.repository import AppIndicator3 as appindicator
 from gi.repository import GObject
+from gi.repository import Keybinder
 import pycook.insta as st
 from ctypes import cdll, c_uint
 X11 = cdll.LoadLibrary("libX11.so.6")
@@ -69,6 +71,9 @@ class XkbIndicator:
         self.indicator.set_status(appindicator.IndicatorStatus.ACTIVE)
         self.indicator.set_menu(self.build_menu())
         self.indicator.set_label(label(), self.app)
+
+        Keybinder.bind("<Alt>space", self.toggle)
+        Keybinder.init()
 
     def build_menu(self):
         menu = gtk.Menu()
