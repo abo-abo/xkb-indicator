@@ -35,32 +35,25 @@ from ctypes import cdll, c_uint
 X11 = cdll.LoadLibrary("libX11.so.6")
 
 #* Constants
-class Layout:
-    def __init__(self, layout, caption):
-        self.layout = layout
-        self.caption = caption
-    def __repr__(self):
-        return self.layout
-
-DEF_LAYOUT = Layout("xx", "en")
-ALT_LAYOUT = Layout("ua", "ua")
-LAYOUTS = {"xx": DEF_LAYOUT, "ua": ALT_LAYOUT}
+LAYOUTS = ["xx", "ua"]
 
 #* Functions
 def current_layout():
     r = st.scb("setxkbmap -query")
     m = re.search("layout: *(.*)", r).group(1)
-    return LAYOUTS[m]
+    return m
 
 def next_layout():
     layout = current_layout()
-    return ALT_LAYOUT if layout == DEF_LAYOUT else DEF_LAYOUT
+    return LAYOUTS[1] if layout == LAYOUTS[0] else LAYOUTS[0]
 
 def label(toggle=False):
+    l1 = next_layout() if toggle else current_layout()
+    l2 = "en" if l1 == "xx" else l1
     if toggle:
-        return next_layout().caption
+        return l2
     else:
-        return current_layout().caption + " ⏷"
+        return l2 + " ⏷"
 
 def unset_caps_lock():
     display = X11.XOpenDisplay(None)
@@ -68,9 +61,8 @@ def unset_caps_lock():
     X11.XCloseDisplay(display)
 
 def set_layout(layout):
-    if layout == DEF_LAYOUT:
-        unset_caps_lock()
-    st.scb(f"setxkbmap {layout.layout}")
+    unset_caps_lock()
+    st.scb(f"setxkbmap {layout}")
 
 #* Class
 class XkbIndicator:
@@ -110,7 +102,7 @@ class XkbIndicator:
             priority=GObject.PRIORITY_DEFAULT)
 
     def stop(self, source):
-        set_layout(DEF_LAYOUT)
+        set_layout(LAYOUTS[0])
         gtk.main_quit()
 
 def main(argv=None):
