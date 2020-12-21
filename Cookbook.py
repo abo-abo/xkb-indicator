@@ -1,5 +1,5 @@
 #* Imports
-from pycook.recipes.pip import reinstall, publish
+from pycook.recipes.pip import reinstall, publish, clean
 import pycook.insta as st
 
 #* Recipes

@@ -30,14 +30,27 @@ from gi.repository import Gtk as gtk
 from gi.repository import AppIndicator3 as appindicator
 from gi.repository import GObject
 from gi.repository import Keybinder
+import pycook.elisp as el
 import pycook.insta as st
 from ctypes import cdll, c_uint
 X11 = cdll.LoadLibrary("libX11.so.6")
 
-#* Constants
-LAYOUTS = ["xx", "ua"]
-
 #* Functions
+def read_layouts():
+    r = {}
+    config_file = "~/.config/xkb-indicator/xkb-indicator.ini"
+    if el.file_exists_p(config_file):
+        txt = el.slurp(config_file)
+        m = re.search("layouts=(.*)", txt)
+        if m:
+            layouts = m.group(1).split(",")
+            assert len(layouts) == 2, "Only two layouts are supported currently. See " + config_file
+            return layouts
+        else:
+            return ["xx", "ua"]
+
+LAYOUTS = read_layouts()
+
 def current_layout():
     r = st.scb("setxkbmap -query")
     m = re.search("layout: *(.*)", r).group(1)
