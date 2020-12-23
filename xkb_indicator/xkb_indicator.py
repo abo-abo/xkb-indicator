@@ -46,8 +46,7 @@ def read_layouts():
             layouts = m.group(1).split(",")
             assert len(layouts) == 2, "Only two layouts are supported currently. See " + config_file
             return layouts
-        else:
-            return ["xx", "ua"]
+    return ["xx", "ua"]
 
 LAYOUTS = read_layouts()
 
