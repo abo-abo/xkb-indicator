@@ -82,7 +82,7 @@ class XkbIndicator:
         self.app = "xkb-indicator"
         self.indicator = appindicator.Indicator.new(
             self.app,
-            "input-keyboard-symbolic",
+            "ibus-keyboard",
             category=appindicator.IndicatorCategory.OTHER)
         self.indicator.set_status(appindicator.IndicatorStatus.ACTIVE)
         self.indicator.set_menu(self.build_menu())

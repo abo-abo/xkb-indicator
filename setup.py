@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='xkb-indicator',
-    version='0.1.2',
+    version='0.1.3',
     description='XKB indicator.',
     long_description='https://raw.githubusercontent.com/abo-abo/xkb-indicator/master/README.org',
     packages=find_packages(),
